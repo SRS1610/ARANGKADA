@@ -137,6 +137,7 @@
             <a class="btn btn-outline-light" href="#/publications" data-route="/publications">Explore Publications</a>
           </div>
         </div>
+        <div class="hero-stage" id="hero3d-stage" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -658,6 +659,11 @@
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     initReveal();
     document.title = buildTitle(path);
+
+    if (typeof Hero3D !== "undefined") {
+      if (path === "/") Hero3D.mount(document.getElementById("hero3d-stage"));
+      else Hero3D.unmount();
+    }
   }
 
   function buildTitle(path) {

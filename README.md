@@ -17,7 +17,17 @@ brief, with real background on Arangkada/JFC filled in from public sources.
   members, legislative priorities). **Edit this file to update content** — no HTML changes needed.
 - `js/app.js` — client-side hash router and rendering/interaction logic (dropdown nav, mobile
   menu, publication search, events calendar, forms)
+- `js/hero3d.js` — the 3D hero scene (Three.js): a rotating cluster of hexagonal prisms echoing
+  the brand mark, with gentle pointer-parallax. Lazy-loaded only on the Home route; falls back to
+  the plain gradient hero if WebGL is unavailable, and skips animation under
+  `prefers-reduced-motion`.
+- `js/tilt.js` — 3D pointer-tilt for publication/program/member/team cards and info panels.
+  Only engages for precise pointers with hover (desktop mice), never on touch, and respects
+  `prefers-reduced-motion`.
 - `assets/favicon.svg` — hexagon brand mark
+- `assets/vendor/three.module.min.js` — Three.js (MIT), vendored locally so the site has no
+  runtime CDN dependency. Fetched via `npm` and copied in as a static asset; there is no build
+  step and nothing to install to run the site.
 
 ## Running locally
 
