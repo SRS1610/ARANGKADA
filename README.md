@@ -1,0 +1,2 @@
+# ARANGKADA
+static site
