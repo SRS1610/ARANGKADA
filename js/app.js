@@ -640,7 +640,7 @@
     return h.split("?")[0].replace(/\/$/, "") || "/";
   }
 
-  function render() {
+  function applyRoute() {
     const path = parseHash();
     const parts = path.split("/").filter(Boolean); // e.g. ["about","tapp"]
 
@@ -655,7 +655,6 @@
 
     $main.innerHTML = html;
     setActiveNav(path);
-    closeMobileNav();
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     initReveal();
     document.title = buildTitle(path);
@@ -664,6 +663,46 @@
       if (path === "/") Hero3D.mount(document.getElementById("hero3d-stage"));
       else Hero3D.unmount();
     }
+  }
+
+  /* 3D card-flip transition between routes; skipped on first load and
+     when the viewer prefers reduced motion. */
+  let firstRender = true;
+  let pendingExitTimer = null;
+  let pendingCleanupTimer = null;
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function render() {
+    if (pendingExitTimer) { clearTimeout(pendingExitTimer); pendingExitTimer = null; }
+    if (pendingCleanupTimer) { clearTimeout(pendingCleanupTimer); pendingCleanupTimer = null; }
+    closeMobileNav();
+
+    if (firstRender || prefersReducedMotion()) {
+      firstRender = false;
+      applyRoute();
+      return;
+    }
+
+    $main.classList.remove("page-enter", "page-enter-active");
+    $main.classList.add("page-exit");
+
+    pendingExitTimer = setTimeout(() => {
+      pendingExitTimer = null;
+      applyRoute();
+      $main.classList.remove("page-exit");
+      $main.classList.add("page-enter");
+      void $main.offsetWidth; // force reflow so the enter transition runs
+      requestAnimationFrame(() => {
+        $main.classList.add("page-enter-active");
+      });
+      pendingCleanupTimer = setTimeout(() => {
+        $main.classList.remove("page-enter", "page-enter-active");
+        pendingCleanupTimer = null;
+      }, 450);
+    }, 200);
   }
 
   function buildTitle(path) {

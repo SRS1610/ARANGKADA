@@ -60,6 +60,54 @@ input, select, textarea { font: inherit; }
 .skip-link:focus { left: 12px; top: 12px; }
 
 /* ---------------------------------------------------------------------
+   Site-wide ambient 3D background — see js/ambient3d.js
+   Fixed behind everything; only visible through the translucent navy
+   zones (hero, page banners, CTA band, footer). Opaque sections
+   (.section, .site-header) paint over it everywhere else.
+   --------------------------------------------------------------------- */
+#ambient3d-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   3D page transitions — see the router in js/app.js
+   --------------------------------------------------------------------- */
+.page-transition-viewport {
+  perspective: 1400px;
+  overflow-x: clip;
+}
+#main {
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+#main.page-exit {
+  transform: perspective(1400px) rotateY(-9deg) translateZ(-80px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.22s ease-in, opacity 0.22s ease-in;
+}
+#main.page-enter {
+  transform: perspective(1400px) rotateY(9deg) translateZ(-80px) scale(0.97);
+  opacity: 0;
+}
+#main.page-enter-active {
+  transform: perspective(1400px) rotateY(0deg) translateZ(0) scale(1);
+  opacity: 1;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  #main.page-exit, #main.page-enter, #main.page-enter-active {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------
    Header
    --------------------------------------------------------------------- */
 .site-header {
@@ -185,7 +233,7 @@ input, select, textarea { font: inherit; }
   background:
     radial-gradient(1200px 600px at 15% -10%, rgba(122, 79, 181, 0.35), transparent 60%),
     radial-gradient(900px 500px at 90% 10%, rgba(31, 158, 143, 0.3), transparent 60%),
-    linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 55%, #142445 100%);
+    linear-gradient(135deg, rgba(22, 35, 63, 0.92) 0%, rgba(31, 58, 99, 0.9) 55%, rgba(20, 36, 69, 0.94) 100%);
   z-index: -1;
 }
 .hero-bg::after {
@@ -244,9 +292,11 @@ input, select, textarea { font: inherit; }
    Page hero (inner pages)
    --------------------------------------------------------------------- */
 .page-hero {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+  position: relative;
+  background: linear-gradient(135deg, rgba(22, 35, 63, 0.9) 0%, rgba(31, 58, 99, 0.88) 100%);
   color: #fff;
   padding: 64px 0 48px;
+  overflow: hidden;
 }
 .page-hero h1 { color: #fff; font-size: clamp(1.6rem, 3vw, 2.2rem); }
 .page-hero-sub { color: #d7deec; max-width: 640px; }
@@ -275,7 +325,7 @@ input, select, textarea { font: inherit; }
 /* ---------------------------------------------------------------------
    Sections & layout helpers
    --------------------------------------------------------------------- */
-.section { padding: 72px 0; }
+.section { padding: 72px 0; background: var(--bg); position: relative; }
 .section-alt { background: var(--bg-alt); }
 .section-head {
   display: flex;
@@ -548,9 +598,11 @@ input, select, textarea { font: inherit; }
    CTA band
    --------------------------------------------------------------------- */
 .cta-band {
-  background: linear-gradient(135deg, var(--teal), var(--blue));
+  position: relative;
+  background: linear-gradient(135deg, rgba(31, 158, 143, 0.88), rgba(47, 111, 176, 0.88));
   color: #fff;
   padding: 56px 0;
+  overflow: hidden;
 }
 .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .cta-inner h2 { color: #fff; margin-bottom: 6px; }
@@ -559,7 +611,7 @@ input, select, textarea { font: inherit; }
 /* ---------------------------------------------------------------------
    Footer
    --------------------------------------------------------------------- */
-.site-footer { background: var(--navy); color: #cdd7ea; padding: 56px 0 24px; }
+.site-footer { position: relative; background: rgba(22, 35, 63, 0.94); color: #cdd7ea; padding: 56px 0 24px; overflow: hidden; }
 .footer-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
